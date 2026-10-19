@@ -130,3 +130,60 @@ def get_article_text(url):
     except Exception as error:
         print(f"  could not get text: {error}")
         return ""
+
+# function for searching said articles 
+def search_google_news():
+    articles = []
+    seen_titles = set()
+
+    today = date.today()
+    start = today - timedelta(days=days_back)
+
+    chunks = make_time_chunks(start, today + timedelta(days=1), chunk_days)
+    chunks.reverse()
+
+    for chunk_start, chunk_end in chunks:
+
+        for query in search_queries:
+
+            if len(articles) >= max_articles:
+                return articles
+
+            full_query = f"{query} after:{chunk_start} before:{chunk_end}"
+
+            url = (
+                "https://news.google.com/rss/search?q="
+                + quote_plus(full_query)
+                + "&hl=id&gl=ID&ceid=ID:id"
+            )
+
+            feed = feedparser.parse(url)
+
+            for entry in feed.entries:
+
+                if len(articles) >= max_articles:
+                    return articles
+
+                title = entry.get("title", "")
+                key = make_title_key(title)
+
+                if key == "" or key in seen_titles:
+                    continue
+
+                summary = entry.get("summary", "")
+                print("checking:", title)
+                if not is_about_psn(title + " " + summary):
+                    continue
+
+                seen_titles.add(key)
+                articles.append({
+                    "title": clean_title(title),
+                    "source": entry.get("source", {}).get("title", ""),
+                    "published": entry.get("published", ""),
+                    "google_link": entry.get("link", ""),
+                })
+
+            time.sleep(pause_seconds)
+        print(f"searched {chunk_start} -> {chunk_end} | total so far: {len(articles)}")
+
+    return articles
