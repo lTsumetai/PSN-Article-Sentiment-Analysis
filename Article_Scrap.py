@@ -187,3 +187,42 @@ def search_google_news():
         print(f"searched {chunk_start} -> {chunk_end} | total so far: {len(articles)}")
 
     return articles
+
+def main():
+    print("Searching Google News...")
+    articles = search_google_news()
+
+    if len(articles) == 0:
+        print("No articles found")
+
+    print(f"\nfound {len(articles)} articles. getting links and text...\n")
+
+    for number, article in enumerate(articles, start=1):
+        article["url"] = get_real_url(article["google_link"])
+
+        if get_full_text:
+            article["text"] = get_article_text(article["url"])
+        else:
+            article["text"] = ""
+
+        print(f"[{number}/{len(articles)}] {article['source']} - {article['title'][:60]}")
+        time.sleep(pause_seconds)
+
+    df = pd.DataFrame(articles)
+
+    df["published"] = pd.to_datetime(df["published"], errors="coerce", utc=True)
+
+    df["text_for_sentiment"] = df.apply(
+        lambda row: row["text"] if len(row["text"]) > 200 else row["title"],
+        axis=1,
+    )
+
+    df = df.sort_values("published", ascending=False)
+
+    df.to_csv(output_file, index=False, encoding="utf-8-sig")
+
+    print(f"\nDone! Saved {len(df)} articles to '{OUTPUT_FILE}'")
+    print(f"Articles with full text: {(df['text'].str.len() > 200).sum()}")
+
+if __name__ == "__main__":
+    main()
