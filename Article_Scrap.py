@@ -15,9 +15,9 @@ from googlenewsdecoder import gnewsdecoder
 
 
 # Maximum number of articles to collect
-MAX_ARTICLES = 200
+MAX_ARTICLES = 500
 
-# (3 years = 365 * 3 days)
+# (3 years = 365 * 10 days)
 DAYS_BACK = 365 * 10
 
 
@@ -56,6 +56,12 @@ SEARCH_QUERIES = [
     'Pasifik Satelit Nusantara Telkomsat',
     '"Pasifik Satelit Nusantara" Indonesia satellite broadband',
     'Adi Adiwoso satelit',
+    '"Pacific Satellite Nusantara"',
+    '"PSN" "Nusantara Satu" peluncuran',
+    '"Nusantara Dua" gagal peluncuran',
+    '"PSN-6"',
+    'Pasifik Satelit Nusantara kontrak',
+    'Pasifik Satelit Nusantara pelanggan',
 ]
 
 # Seconds to wait between requests. 
@@ -75,14 +81,19 @@ BROWSER_HEADERS = {
 def is_about_psn(text):
     text = text.lower()
 
-    # Company name, satellite names, or founder to find relevancy
-    if ("pasifik satelit" in text
-            or "nusantara lima" in text
-            or "nusantara satu" in text
-            or "adi rahman adiwoso" in text):
+    names = [
+        "pasifik satelit",
+        "pacific satellite nusantara",
+        "nusantara satu",
+        "nusantara dua",
+        "nusantara tiga",
+        "nusantara lima",
+        "adi rahman adiwoso",
+        "adi adiwoso",
+    ]
+    if any(name in text for name in names):
         return True
 
-    # adding context text 
     if "psn" in text and ("satelit" in text or "satellite" in text or "internet" in text):
         return True
 
