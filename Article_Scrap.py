@@ -15,7 +15,7 @@ from googlenewsdecoder import gnewsdecoder
 
 
 # Maximum number of articles to collect
-MAX_ARTICLES = 150
+MAX_ARTICLES = 200
 
 # (3 years = 365 * 3 days)
 DAYS_BACK = 365 * 10
@@ -28,7 +28,13 @@ CHUNK_DAYS = 90
 GET_FULL_TEXT = True
 
 # csv output file 
-OUTPUT_FILE = "psn_news.csv"
+OUTPUT_FILE = "PSN_articles.csv"
+
+# Two Google News editions: Indonesian and English
+EDITIONS = [
+    "hl=id&gl=ID&ceid=ID:id",
+    "hl=en&gl=US&ceid=US:en",
+]
 
 # lists for keywords
 SEARCH_QUERIES = [
@@ -42,10 +48,28 @@ SEARCH_QUERIES = [
     'Adi Rahman Adiwoso',
     'PSN satelit Telkom',
     '"Pasifik Satelit Nusantara" satellite',
+    'PSN Starlink satelit',
+    'PSN satelit LEO',
+    '"Nusantara Dua" satelit',
+    '"Nusantara Tiga" satelit',
+    '"Nusantara Lima" satelit',
+    'Pasifik Satelit Nusantara Telkomsat',
+    '"Pasifik Satelit Nusantara" Indonesia satellite broadband',
+    'Adi Adiwoso satelit',
 ]
 
 # Seconds to wait between requests. 
 PAUSE_SECONDS = 1
+
+BROWSER_HEADERS = {
+    "User-Agent": (
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
+        "(KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
+    ),
+    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+    "Accept-Language": "id-ID,id;q=0.9,en;q=0.8",   # Indonesian browser
+    "Referer": "https://www.google.com/",            # "I came from Google"
+}
 
 # func to identify psn by combining keywords
 def is_about_psn(text):
@@ -174,17 +198,18 @@ def search_google_news():
 
             # Build the Google News RSS web address.
             # hl/gl/ceid = language and country (Indonesian, Indonesia)
-            url = (
-                "https://news.google.com/rss/search?q="
-                + quote_plus(full_query)
-                + "&hl=id&gl=ID&ceid=ID:id"
-            )
+            # Collect the articles from both editions into one list
+            entries = []
+            for edition in EDITIONS:
+                url = (
+                    "https://news.google.com/rss/search?q="
+                    + quote_plus(full_query)
+                    + "&" + edition
+                )
+                entries += feedparser.parse(url).entries
 
-            # Download and read the feed
-            feed = feedparser.parse(url)
-
-            # Each "entry" in the feed is one news article
-            for entry in feed.entries:
+            # Each "entry" in the list is one news article
+            for entry in entries:
 
                 # Stop reaching max articles
                 if len(articles) >= MAX_ARTICLES:
@@ -244,6 +269,12 @@ def main():
 
     # Saving into data frame
     df = pd.DataFrame(articles)
+
+    # Remove articles where "PSN" means "Proyek Strategis Nasional" 
+    df = df[~df["title"].str.contains(
+    r"Masuk PSN|Integrasi Masuk PSN|PSN Teknologi",
+    case=False, regex=True
+    )]
 
     # Convert the date text into a real date so it can be sorted
     df["published"] = pd.to_datetime(df["published"], errors="coerce", utc=True)
