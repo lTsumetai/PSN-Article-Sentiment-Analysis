@@ -47,9 +47,7 @@ SEARCH_QUERIES = [
 # Seconds to wait between requests. 
 PAUSE_SECONDS = 1
 
-
-
-
+# func to identify psn by combining keywords
 def is_about_psn(text):
     text = text.lower()
 
@@ -111,7 +109,7 @@ def get_real_url(google_link):
     except Exception as error:
         print("   Decode error:", error)
 
-    return google_link                         # give up, use the original link
+    return google_link                         
 
 #func to download article content 
 def get_article_text(url):
@@ -147,32 +145,31 @@ def get_article_text(url):
         print(f"   Could not get text: {error}")
         return ""
 
-
+#func to search news from google, and return a list of articles
 def search_google_news():
-    """Search Google News and return a list of articles (basic info only)."""
 
-    articles = []        # our collected articles will go in this list
-    seen_titles = set()  # a "set" remembers titles we've already saved (no duplicates)
+    articles = []        # collected articles will enter this list
+    seen_titles = set()  # a "set" remembers titles that's saved 
 
-    # The time range we want to search
+    # The time range to search
     today = date.today()
     start = today - timedelta(days=DAYS_BACK)
 
-    # Newest chunks first, so recent news is collected before we hit the limit
+    # Newest chunks first, so recent news is collected before hitting the limit
     chunks = make_time_chunks(start, today + timedelta(days=1), CHUNK_DAYS)
     chunks.reverse()
 
-    # Loop through every time chunk...
+    # Loop through every time chunk
     for chunk_start, chunk_end in chunks:
 
-        # ...and every search phrase
+        
         for query in SEARCH_QUERIES:
 
-            # Stop early if we already have enough articles
+            # Stop early if enough articles has reached
             if len(articles) >= MAX_ARTICLES:
                 return articles
 
-            # Add date limits to the search, Google understands "after:" and "before:"
+            # Add date limits to the search
             full_query = f"{query} after:{chunk_start} before:{chunk_end}"
 
             # Build the Google News RSS web address.
@@ -189,7 +186,7 @@ def search_google_news():
             # Each "entry" in the feed is one news article
             for entry in feed.entries:
 
-                # Stop if we have enough
+                # Stop reaching max articles
                 if len(articles) >= MAX_ARTICLES:
                     return articles
 
@@ -206,7 +203,7 @@ def search_google_news():
                 if not is_about_psn(title + " " + summary):
                     continue
 
-                # This article is good! Remember it and save its info.
+                # save article info.
                 seen_titles.add(key)
                 articles.append({
                     "title": clean_title(title),
@@ -233,7 +230,7 @@ def main():
 
     print(f"\nFound {len(articles)} articles. Getting real links and text...\n")
 
-    # For every article, find the real URL and (optionally) the full text
+    # For every article, find the real URL and the full text
     for number, article in enumerate(articles, start=1):
         article["url"] = get_real_url(article["google_link"])
 
@@ -245,15 +242,13 @@ def main():
         print(f"[{number}/{len(articles)}] {article['source']} - {article['title'][:60]}")
         time.sleep(PAUSE_SECONDS)
 
-    # Put everything into a table (DataFrame), like an Excel sheet
+    # Saving into data frame
     df = pd.DataFrame(articles)
 
-    # Convert the date text into a real date so we can sort by it
+    # Convert the date text into a real date so it can be sorted
     df["published"] = pd.to_datetime(df["published"], errors="coerce", utc=True)
 
-    # Create a column for sentiment analysis:
-    # use the full text if we got a decent amount (more than 200 characters),
-    # otherwise fall back to the headline.
+    # Create a text column for sentiment analysis:
     df["text_for_sentiment"] = df.apply(
         lambda row: row["text"] if len(row["text"]) > 200 else row["title"],
         axis=1,
@@ -269,7 +264,5 @@ def main():
     print(f"Articles with full text: {(df['text'].str.len() > 200).sum()}")
 
 
-# This line means: "only run main() when I run this file directly".
-# It's standard Python practice, you can just leave it as it is.
 if __name__ == "__main__":
     main()
