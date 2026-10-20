@@ -17,7 +17,7 @@ from googlenewsdecoder import gnewsdecoder
 # Maximum number of articles to collect
 MAX_ARTICLES = 500
 
-# (3 years = 365 * 10 days)
+# (10 years = 365 * 10 days)
 DAYS_BACK = 365 * 10
 
 
@@ -67,14 +67,15 @@ SEARCH_QUERIES = [
 # Seconds to wait between requests. 
 PAUSE_SECONDS = 1
 
+#Headers = the "name tag" script shows to a website. to access websites
 BROWSER_HEADERS = {
     "User-Agent": (
         "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
         "(KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
     ),
     "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-    "Accept-Language": "id-ID,id;q=0.9,en;q=0.8",   # Indonesian browser
-    "Referer": "https://www.google.com/",            # "I came from Google"
+    "Accept-Language": "id-ID,id;q=0.9,en;q=0.8",   
+    "Referer": "https://www.google.com/",            
 }
 
 # func to identify psn by combining keywords
@@ -102,8 +103,6 @@ def is_about_psn(text):
 
 #func to remove domain 
 def clean_title(title):
-   
-    # r"\s+-\s+[^-]+$" means: "a dash near the end, followed by the source name"
     return re.sub(r"\s+-\s+[^-]+$", "", title)
 
 #func to get clean title
@@ -132,13 +131,12 @@ def get_real_url(google_link):
         result = gnewsdecoder(google_link, interval=1)
 
         # Newer versions use "success", older versions use "status".
-        # We check both so the code works either way.
         worked = result.get("success") or result.get("status")
 
         if worked:
             return result["decoded_url"]       # the real article link
 
-        # If it really failed, print the whole result to see why
+        # printing the whole result if failed to decode 
         print("   Decode failed:", result)
 
     except Exception as error:
@@ -266,7 +264,7 @@ def main():
 
     print(f"\nFound {len(articles)} articles. Getting real links and text...\n")
 
-    # For every article, find the real URL and the full text
+    # find the real URL and the full text for each article
     for number, article in enumerate(articles, start=1):
         article["url"] = get_real_url(article["google_link"])
 
