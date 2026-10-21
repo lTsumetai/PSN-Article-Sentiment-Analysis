@@ -159,8 +159,8 @@ def get_article_text(url):
         if not html:
             response = requests.get(
                 url,
-                headers={"User-Agent": "Mozilla/5.0"},  # browser-like name
-                timeout=15,                             # give up after 15 seconds
+                headers={"User-Agent": "Mozilla/5.0"},  # browser name
+                timeout=15,                             # skips after 15 seconds
             )
 
             # Status 200 means "OK". anything else gives error
@@ -198,14 +198,13 @@ def search_google_news():
         
         for query in SEARCH_QUERIES:
 
-            # Stop early if enough articles has reached
             if len(articles) >= MAX_ARTICLES:
                 return articles
 
             # Add date limits to the search
             full_query = f"{query} after:{chunk_start} before:{chunk_end}"
 
-            # Build the Google News RSS web address.
+            # Google News RSS web address.
             # hl/gl/ceid = language and country (Indonesian, Indonesia)
             # Collect the articles from both editions into one list
             entries = []
