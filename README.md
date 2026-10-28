@@ -49,7 +49,7 @@ DistilBERT finds most positive and negative articles but almost never says neutr
 
 ### Student model results
 
-Test set: 39 articles (32 positive, 7 negative, 0 neutral), split 80/20 with stratification.
+Test set, consist of 39 articles (32 positive, 7 negative, 0 neutral), split 80/20 with stratification.
 
 | Model | Accuracy | Macro F1 |
 |---|---|---|
@@ -63,7 +63,7 @@ Naive Bayes predicts "positive" for every article, so it finds none of the negat
 | | |
 |---|---|
 | Articles | 193 (PSN-related, 190 mention PSN directly) |
-| Sources | 75 publishers (top: detikInet 34, Bisnis Tekno 13, Kompas.id 10, Suara.com 10) |
+| Sources | 75 publishers (detikInet 34, Bisnis Tekno 13, Kompas.id 10, Suara.com 10) |
 | Period | May 2017 to July 2026 |
 | Language | about 141 Indonesian, 52 English or other |
 | Title only | 33 articles where the full text could not be scraped |
@@ -106,9 +106,8 @@ jupyter notebook Article_Sentiment_Analysis.ipynb
 
 Python, pandas, NumPy, scikit-learn, Hugging Face Transformers, PyTorch, matplotlib, seaborn
 
-## Possible Next Steps
-
+## Future Improvements
+this project can be further improved by the following :
 - Label more articles by hand, and train on them together with the pseudo-labels.
-- Add a confidence cutoff, so uncertain articles are labeled neutral instead of positive.
 - Test the final model against the reference sample on articles it was not trained on.
-- Collect more articles per publisher to compare sources more fairly.
+- Collect more articles from scraping per publisher to compare sources more fairly.
