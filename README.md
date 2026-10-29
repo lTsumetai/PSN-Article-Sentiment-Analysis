@@ -38,7 +38,7 @@ Pseudo-labels are not ground truth. The student's scores show how closely it cop
 
 ### Choosing the labeler
 
-Two pretrained models were compared on an 80-article reference sample, labeled from article titles with AI assistance:
+Two pretrained models were compared on an 80-article reference sample, labeled manually from article titles:
 
 | Model | Accuracy | Macro F1 | Negative found | Positive found | Neutral found |
 |---|---|---|---|---|---|
@@ -89,7 +89,7 @@ jupyter notebook Article_Sentiment_Analysis.ipynb
 ```
 
 - The notebook reads `PSN_articles.csv` and `labeled_sample.csv`, so keep them in the same folder.
-- The pretrained models are downloaded from Hugging Face on the first run, so you need an internet connection. Labeling 193 articles on a CPU may take a few minutes.
+- The pretrained models are downloaded from Hugging Face on the first run. Labeling 193 articles on a CPU may take a few minutes.
 - To collect fresh articles, run `Article_Scrap.py` (its imports are listed at the top of the file). It writes `PSN_articles.csv`. Then open `Data_Checking.ipynb` for a quick check of the scraped data before using it in the main notebook.
 
 ## Repository Structure
