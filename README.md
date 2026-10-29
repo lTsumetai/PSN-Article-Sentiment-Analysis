@@ -82,9 +82,8 @@ Naive Bayes predicts "positive" for every article, so it finds none of the negat
 ## How to Run
 
 ```bash
-git clone <your-repo-url>
-cd <your-repo-name>
-pip install pandas numpy matplotlib seaborn scikit-learn torch transformers
+git clone https://github.com/lTsumetai/PSN-Article-Sentiment-Analysis
+cd PSN-Article-Sentiment-Analysis
 pip install pandas numpy matplotlib seaborn scikit-learn torch transformers Sastrawi
 jupyter notebook Article_Sentiment_Analysis.ipynb
 ```
