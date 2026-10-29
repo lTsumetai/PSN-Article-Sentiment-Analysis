@@ -106,8 +106,6 @@ jupyter notebook Article_Sentiment_Analysis.ipynb
 
 ## Tech Stack
 
-## Tech Stack
-
 | | Tool | Used for |
 |---|---|---|
 | <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg" alt="Python" width="24" height="24"/> | Python | Everything in the project |
