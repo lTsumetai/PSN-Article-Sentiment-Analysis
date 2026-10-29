@@ -11,14 +11,14 @@ The scraped articles have no sentiment labels, so the project uses **pseudo-labe
   - **April 2020:** 16 negative articles in 6 days, all about the Nusantara Dua satellite failing to reach orbit.
   - **September 2025:** a cluster of negative articles around the delays before the Nusantara Lima launch.
 - **Publishers:** Kompas.com has the highest share of negative articles (4 of 6), but the sample is small to say a publisher is more negative. detikInet has the most negative articles (7), but that is only 21% of its 34 articles.
-- **Top words:** the words that push an article toward each label are mostly event and company names eg. *palapa*, *mengangkasa*, *spacex* for negative; *kapasitas*, *terbesar*, *teknologi* for positive, not emotion words. hence it cannot see word context.
+- **Top words:** after removing English and Indonesian stopwords, the words that push an article toward each label are still mostly events and company names. eg. *palapa*, *mengangkasa*, *scrub* for negative and *kapasitas*, *terbesar*, *teknologi* for positive, not emotion words.
 
 ## Pipeline
 
 1. **Scraping and quick check:** collect PSN articles from Google News RSS (`Article_Scrap.py`), then run a quick check on the scraped file (`Data_Checking.ipynb`).
 2. **EDA and cleaning:** check duplicates, dates, sources, language and text length, then clean the article text.
 3. **Pseudo-labeling:** compare two pretrained sentiment models and label every article with the better one (DistilBERT).
-4. **Modelling:** train Logistic Regression and Naive Bayes on the pseudo-labels, then tune Logistic Regression with `GridSearchCV`.
+4. **Modelling:** train Logistic Regression and Naive Bayes on the pseudo-labels as a baseline, then remove English and Indonesian stopwords and tune Logistic   Regression with `GridSearchCV`.
 5. **Sentiment analysis:** use the final Logistic Regression model to answer four questions
    - overall sentiment
    - change over time
@@ -32,7 +32,7 @@ unlabeled articles ──> DistilBERT (teacher) ──> pseudo-labels ──> Lo
 ```
 
 - **Teacher:** `lxyuan/distilbert-base-multilingual-cased-sentiments-student`, a multilingual model that handles both Indonesian and English articles.
-- **Student:** a TF-IDF + Logistic Regression pipeline trained on the teacher's labels.
+- **Student:** a TF-IDF + Logistic Regression pipeline trained on the teacher's labels. The final tuned model removes English (scikit-learn) and Indonesian ([Sastrawi](https://github.com/har07/PySastrawi)) stopwords.
 
 Pseudo-labels are not ground truth. The student's scores show how closely it copies the teacher, not how correct the sentiment is.
 
@@ -56,7 +56,7 @@ Test set, consist of 39 articles (32 positive, 7 negative, 0 neutral), split 80/
 | Logistic Regression | 0.923 | 0.841 |
 | Naive Bayes | 0.821 | 0.451 |
 
-Naive Bayes predicts "positive" for every article, so it finds none of the negative ones. Logistic Regression finds 4 of the 7. It was then tuned with `GridSearchCV` (best: `C=10`, `max_features=2000`, `ngram_range=(1, 2)`) and used as the final model.
+Naive Bayes predicts "positive" for every article, so it finds none of the negative ones. Logistic Regression finds 4 of the 7. These two scores are a baseline without stopword removal. Logistic Regression was then tuned with stopword removal and `GridSearchCV` with the best param `C=10`, `max_features=2000`, `ngram_range=(1, 1)`, that produces cross-validation f1 score at 0.612 and used as the final model.
 
 ## Data
 
@@ -77,6 +77,7 @@ Naive Bayes predicts "positive" for every article, so it finds none of the negat
 - **Some labels are incorectly predicted.** A few articles about a successful launch are labeled negative, for example titles with "Berhasil Mengangkasa".
 - **Coverage gaps.** Google News RSS gives uneven coverage by year (for example, no articles in 2018).
 - **Reference labels are small and title-based.** The 80-article sample was labeled from titles only, so it is a rough check.
+- **Unstable cross-validation score.** Only 2 articles are neutral, so some cross-validation folds contain none, and the f1 score differs alot with small changes (0.633 before stopword removal, 0.612 after).
 
 ## How to Run
 
@@ -84,6 +85,7 @@ Naive Bayes predicts "positive" for every article, so it finds none of the negat
 git clone <your-repo-url>
 cd <your-repo-name>
 pip install pandas numpy matplotlib seaborn scikit-learn torch transformers
+pip install pandas numpy matplotlib seaborn scikit-learn torch transformers Sastrawi
 jupyter notebook Article_Sentiment_Analysis.ipynb
 ```
 
@@ -104,7 +106,19 @@ jupyter notebook Article_Sentiment_Analysis.ipynb
 
 ## Tech Stack
 
-Python, pandas, NumPy, scikit-learn, Hugging Face Transformers, PyTorch, matplotlib, seaborn
+## Tech Stack
+
+| | Tool | Used for |
+|---|---|---|
+| <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg" alt="Python" width="24" height="24"/> | Python | Everything in the project |
+| <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/pandas/pandas-original.svg" alt="pandas" width="24" height="24"/> | pandas | Loading, cleaning and analyzing the data |
+| <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/numpy/numpy-original.svg" alt="NumPy" width="24" height="24"/> | NumPy | Working with arrays, like the model's word weights |
+| <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/scikitlearn/scikitlearn-original.svg" alt="scikit-learn" width="24" height="24"/> | scikit-learn | TF-IDF, Logistic Regression, Naive Bayes and tuning |
+| 🇮🇩 | Sastrawi | Indonesian stopword list |
+| <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/huggingface/huggingface-original.svg" alt="Hugging Face" width="24" height="24"/> | Hugging Face Transformers | Pretrained sentiment models (DistilBERT, XLM-RoBERTa) |
+| <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/pytorch/pytorch-original.svg" alt="PyTorch" width="24" height="24"/> | PyTorch | Running the pretrained models |
+| <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/matplotlib/matplotlib-original.svg" alt="matplotlib" width="24" height="24"/> | matplotlib | Charts |
+| <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/seaborn/seaborn-original.svg" alt="seaborn" width="24" height="24"/> | seaborn | Charts |
 
 ## Future Improvements
 this project can be further improved by the following :
