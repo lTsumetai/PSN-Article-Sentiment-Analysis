@@ -1,15 +1,31 @@
-# PSN News Sentiment Analysis
+# PSN News: Sentiment Analysis
 
-How does the news talk about **Pasifik Satelit Nusantara (PSN)**.
+The main objective of this project was to answer this specific question
+
+when **Pasifik Satelit Nusantara (PSN)** makes the news, does the public take notice ?
+
+this project scrapes news about PSN, finds what the coverage is about, checks how positive or negative it is, and compares it with google trends to see when and where people search for PSN's satellites
 
 ## Key Findings
 
+1. articles / news scrap distribution using beautifulsoup was mostly informative. 53% neutral, 37% positive, 10% negative
+2. the public searches for PSN satellites only around big events. each satellite keyword has exactly one big rise in searches and it sits in the month of a launch of a failure
+
+   | Event | Search peak | Articles in that month | Average tone in that month |
+   |---|---|---|---|
+   | Nusantara Satu launch | Feb 2019 | 7 | +0.24 |
+   | Nusantara Dua launch failure | Apr 2020 | 16 | -0.70 |
+   | SATRIA | Jun 2023 | 10 | +0.23 |
+   | Nusantara Lima launch | Sep 2025 | 39 | +0.48 |
+
+3. The even months has more articles than a normal month. this means searches spikes when there is a burst of coverage, for example satellite launch
+4. The even drives attention. launches were neutral to positive, and the nusantara dua failure was strongly negative.
+5. 
+
+## BERTopic
 
 
 ## Pipeline
-
-
-## Approach: Pseudo-labeling
 
 
 
@@ -27,28 +43,14 @@ How does the news talk about **Pasifik Satelit Nusantara (PSN)**.
 
 ## Limitations
 
-- **The labels come from a model.** Every score for the student model is learnt from DistilBERT, not accuracy.
-- **Positive is probably overcounted.** In the 80-article reference sample, 53% of articles were neutral and 38% positive, but DistilBERT called almost nothing neutral. News is mostly factual, so the real distribution of neutral articles is likely much higher than the 1% shown.
-- **Neutral is almost missing.** Only 2 articles are labeled neutral, so the student model cannot learn that class.
-- **Small data.** With 193 articles, and only 5 to 34 articles per publisher, differences between sources could be chance.
-- **Some labels are incorectly predicted.** A few articles about a successful launch are labeled negative, for example titles with "Berhasil Mengangkasa".
-- **Coverage gaps.** Google News RSS gives uneven coverage by year (for example, no articles in 2018).
-- **Reference labels are small and title-based.** The 80-article sample was labeled from titles only, so it is a rough check.
-- **Unstable cross-validation score.** Only 2 articles are neutral, so some cross-validation folds contain none, and the f1 score differs alot with small changes (0.633 before stopword removal, 0.612 after).
+
 
 ## How to Run
 
 
 ## Repository Structure
 
-```
-├── Article_Scrap.py                 # scrapes Google News RSS into PSN_articles.csv
-├── Data_Checking.ipynb              # quick data check after scraping
-├── PSN_articles.csv                 # 193 scraped PSN articles (output of the script)
-├── labeled_sample.csv               # 80-article reference sample
-├── Article_Sentiment_Analysis.ipynb # labeling, modelling and analysis
-└── README.md
-```
+
 
 ## Tech Stack
 
