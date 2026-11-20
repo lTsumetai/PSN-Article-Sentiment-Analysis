@@ -79,6 +79,10 @@ News articles and google trends are two seperate tables, so they are joined by *
 
 ## Limitations
 
+- every satelite keyword only has one big search rise, hence the pattern only comes ffrom 4 cases
+- Coverage and searches spikes together, but only a certain event drives them both.
+- The dataset used (after cleaning) was only 254 articles, being several topics only has 12 to 21 articles, and the negative sentiment only has just 24 hand labels
+- Google News RSS gives uneven coverage by year. making it imbalanced data.
 
 
 ## How to Run
