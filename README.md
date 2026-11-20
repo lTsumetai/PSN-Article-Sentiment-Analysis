@@ -43,9 +43,8 @@ Average sentiment goes from negative to positive. topics with fewer than 10 arti
 ## Pipeline
 
 ```
-Scraping → Cleaning → Topic Modelling → Topic Grouping
-→ Google Trends Analysis → Sentiment Analysis
-→ Data Integration → Insights & Findings
+Scraping → Cleaning → Topic Modelling → Topic Grouping → Google Trends Analysis
+→ Sentiment Analysis → Insights & Findings
 ```
 
 
