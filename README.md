@@ -43,14 +43,9 @@ Average sentiment goes from negative to positive. topics with fewer than 10 arti
 ## Pipeline
 
 ```
-Scraped articles
-   -> Cleaning: noise, short, duplicate and off-topic articles removed (254)
-   -> Topic modelling: embeddings -> UMAP -> HDBSCAN -> c-TF-IDF (10 topics)
-   -> Topic groups: topics linked to one Google Trends keyword each
-   -> Google Trends over time: monthly search growth next to monthly coverage
-   -> Google Trends by region: score per province, drawn on a map
-   -> Sentiment: TF-IDF + Logistic Regression trained on 180 hand-labelled articles
-   -> Join topics, sentiment and search interest -> findings
+Scraping → Cleaning → Topic Modelling → Topic Grouping
+→ Google Trends Analysis → Sentiment Analysis
+→ Data Integration → Insights & Findings
 ```
 
 
