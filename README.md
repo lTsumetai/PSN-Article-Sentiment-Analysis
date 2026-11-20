@@ -11,7 +11,7 @@ this project scrapes news about PSN, finds what the coverage is about, checks ho
 1. articles / news scrap distribution using beautifulsoup was mostly informative. 53% neutral, 37% positive, 10% negative
 2. the public searches for PSN satellites only around big events. each satellite keyword has exactly one big rise in searches and it sits in the month of a launch of a failure
 
-   | Event | Search peak | Articles in that month | Average tone in that month |
+   | Event | Search peak | Articles in that month | Average drivers in that month |
    |---|---|---|---|
    | Nusantara Satu launch | Feb 2019 | 7 | +0.24 |
    | Nusantara Dua launch failure | Apr 2020 | 16 | -0.70 |
