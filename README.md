@@ -47,16 +47,35 @@ Scraping → Cleaning → Topic Modelling → Topic Grouping → Google Trends A
 → Sentiment Analysis → Insights & Findings
 ```
 
+## Approach
+
+News articles and google trends are two seperate tables, so they are joined by **month** column. each article gets the search numbers of the month it was published in.
+
+- topic will be used to search for google trend keywords, and topic will be grouped based on the topic generated.
+- Google trends cannot filter news or article that talks about psn, so General topics are excluded, for example Rural Internet Access
+- Google trends analysis where there are months  where the search score went up compared with the previous month and a month where a topic group had more articles.
+- plotting region maps where google trends score was based in. google trend scores are joined to a GeoJSON file of indoneisa's provinces by province name and visualized with map and a heatmap
+- Three Classifiers were used to predict sentiment for each articles. then are compared with 5-fold cross-validation on the hand labelled articles. the best one will be used for predicting the remaining articles.
+
+| Model | Macro F1 | Accuracy |
+|---|---|---|
+| TF-IDF + Logistic Regression | 0.743 | 0.761 |
+| TF-IDF + SVM | 0.698 | 0.722 |
+| TF-IDF + Naive Bayes | 0.690 | 0.722 |
+
+
 
 ## Data
 
 | | |
 |---|---|
-| Articles | 193 (PSN-related, 190 mention PSN directly) |
-| Sources | 75 publishers (detikInet 34, Bisnis Tekno 13, Kompas.id 10, Suara.com 10) |
+| Articles | 918 scraped from Google News RSS, 254 after cleaning (249 used for Trends and sentiment, after removing 5 articles about "Proyek Strategis Nasional") |
+| Sources | detikInet 49, Bisnis Tekno 25, Kompas.id 20, Suara.com 12 (top 4, of the 249 articles) |
 | Period | May 2017 to July 2026 |
-| Language | about 141 Indonesian, 52 English or other |
-| Title only | 33 articles where the full text could not be scraped |
+| Language | 216 Indonesian, 38 English |
+| Article length | median 417 words |
+| Hand labels | 180 articles (24 negative, 92 neutral, 64 positive) |
+| Google Trends | monthly scores for 5 keywords, plus region tables by province (13 to 27 provinces for Nusantara Satu and SATRIA, 4 to 6 for the rest) |
 
 ## Limitations
 
