@@ -20,15 +20,38 @@ this project scrapes news about PSN, finds what the coverage is about, checks ho
 
 3. The even months has more articles than a normal month. this means searches spikes when there is a burst of coverage, for example satellite launch
 4. The even drives attention. launches were neutral to positive, and the nusantara dua failure was strongly negative.
-5. 
+5. The most negative topic occurred during the month of the Nusantara Dua failure, with a sentiment score of -0.61. meanwhile the rest of the topic was mostly dominant positive or neutral. this shows that sentiment highly dependant on topics.
+6. 
 
 ## BERTopic
+
+Average sentiment goes from negative to positive. topics with fewer than 10 articles are left out of the table.
+
+| Topic | Articles | Average sentiment |
+|---|---|---|
+| Nusantara Dua launch failure | 18 | -0.61 |
+| Orbit slots and Starlink | 29 | 0.11 |
+| SATRIA project | 38 | 0.21 |
+| Satellite launch and capacity | 26 | 0.23 |
+| Adi Rahman Adiwoso (CEO) | 20 | 0.38 |
+| Nusantara Lima launch | 59 | 0.39 |
+| Nusantara Lima capacity and connectivity | 21 | 0.47 |
+| Digital technology and connectivity | 13 | 0.55 |
+| Rural internet access | 12 | 0.61 |
 
 
 ## Pipeline
 
-
-
+```
+Scraped articles
+   -> Cleaning: noise, short, duplicate and off-topic articles removed (254)
+   -> Topic modelling: embeddings -> UMAP -> HDBSCAN -> c-TF-IDF (10 topics)
+   -> Topic groups: topics linked to one Google Trends keyword each
+   -> Google Trends over time: monthly search growth next to monthly coverage
+   -> Google Trends by region: score per province, drawn on a map
+   -> Sentiment: TF-IDF + Logistic Regression trained on 180 hand-labelled articles
+   -> Join topics, sentiment and search interest -> findings
+```
 
 
 ## Data
