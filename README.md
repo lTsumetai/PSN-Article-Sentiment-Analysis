@@ -83,13 +83,24 @@ News articles and google trends are two seperate tables, so they are joined by *
 - Coverage and searches spikes together, but only a certain event drives them both.
 - The dataset used (after cleaning) was only 254 articles, being several topics only has 12 to 21 articles, and the negative sentiment only has just 24 hand labels
 - Google News RSS gives uneven coverage by year. making it imbalanced data.
-
-
-## How to Run
-
+- f1 score for the best model is 0.74 in cross-validation, it less accurate on english articles rather than indonesian one, english article scores 0.67 meanwhile indonesian ones is at 0.78. it can be improved by using another prediction model.
+ 
 
 ## Repository Structure
 
+```
+├── Topic_Modelling_Sentiment_Analysis.ipynb   
+├── psn_news_scraped.csv                      
+├── psn_article_cleaned.csv                   
+├── psn_to_label.csv                          
+├── GoogleTrends/                             
+│   ├── satelit_*.csv                         
+│   └── trends_*.csv                          
+├── GoogleTrendsRegion/                      
+├── GeoJSON/
+│   └── indonesia_provinces.geojson           
+└── README.md
+```
 
 
 ## Tech Stack
