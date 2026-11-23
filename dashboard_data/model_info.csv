@@ -1,0 +1,2 @@
+chosen_model,n_labeled,n_articles
+TF-IDF + Logistic Regression,180,249

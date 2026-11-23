@@ -1,0 +1,4 @@
+model,f1 negative,f1 neutral,f1 positive,Macro F1,accuracy
+TF-IDF + Logistic Regression,0.696,0.784,0.75,0.743,0.761
+TF-IDF + Naive Bayes,0.684,0.78,0.606,0.69,0.722
+TF-IDF + SVM,0.682,0.766,0.647,0.698,0.722
