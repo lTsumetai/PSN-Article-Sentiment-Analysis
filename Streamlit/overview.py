@@ -47,7 +47,7 @@ with right:
 st.divider()
 
 # Public Search Summary
-st.subhead("Public search interest summary")
+st.subheader("Public search interest summary")
 
 summary = group_summary(articles, groups, trends)
 
@@ -66,6 +66,6 @@ with right:
     table["Peak month"] = table["peak month"].dt.strftime("%b %Y")
     st.dataframe(table[["keyword", "peak month", "months with searches"]], hide_index=True, width="stretch")
     st.caption("Each keyword has its own 0-100 scale, so compare the timing of the peaks, not the heights.")
-    
+
 st.info("People search for PSN satellites when there is a big event, such as a launch or a failure, "
         "and the news coverage of that event lands in the same month.")
