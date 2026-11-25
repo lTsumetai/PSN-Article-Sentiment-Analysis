@@ -104,5 +104,55 @@ right.dataframe(
 
 st.divider()
 
+# Coverage Trends
+st.subheader("News coverage trends")
+
+o1, o2 = st.columns(2)
+period = o1.radio("Time period", ["Monthly", "Yearly"], horizontal=True)
+stack_by = o2.radio("Split by", ["Topic", "Sentiment"], horizontal=True)
+
+x_col = "month" if period == "Monthly" else "year"
+color_col = "topic_label" if stack_by == "Topic" else "sentiment"
+plot_df = df if stack_by == "Sentiment" else topic_df
+
+trend = plot_df.groupby([x_col, color_col]).size().reset_index(name="articles")
+if color_col == "sentiment":
+    fig = px.bar(trend, x=x_col, y="articles", color=color_col, color_discrete_map=sentiment_colors,
+                 category_orders={"sentiment": sentiment_order})
+else:
+    fig = px.bar(trend, x=x_col, y="articles", color=color_col)
+if x_col == "year":
+    fig.update_xaxes(type="category")
+fig.update_layout(xaxis_title="", yaxis_title="Articles", legend_title_text="")
+st.plotly_chart(fig, width="stretch")
+
+st.divider()
+
+# Article explorer
+st.subheader("Lists of articles")
+
+search = st.text_input("Search in title", "")
+table = df
+if search:
+    table = table[table["title_clean"].str.contains(search, case=False, na=False)]
+table = table.sort_values("date", ascending=False)
+
+st.caption(f"{len(table)} articles. Click a column name to sort. Sentiment is the model prediction, "
+           "or the hand label where the article was labelled by hand.")
+st.dataframe(
+    table[["title_clean", "source", "date", "topic_label", "sentiment", "label_source", "article_url"]],
+    hide_index=True,
+    width="stretch",
+    column_config={
+        "title_clean": "Title",
+        "source": "Source",
+        "date": st.column_config.DateColumn("Date"),
+        "topic_label": "Topic",
+        "sentiment": "Predicted sentiment",
+        "label_source": "Label by",
+        "article_url": st.column_config.LinkColumn("Original article", display_text="open"),
+    },
+)
+
 
 
