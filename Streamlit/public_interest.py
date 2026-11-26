@@ -15,30 +15,29 @@ geojson = data["geojson"]
 keyword_of = dict(zip(groups["key"], groups["keyword"]))
 summary = group_summary(articles, groups, trends)
 
-
 st.title("Public Interest")
-st.caption("Google Trends search interest for PSN satellites and related topics")
+st.caption("Google Trends search interest (0-100) for PSN satellites and related topics. "
+           "This page always uses all articles.")
 
-# search interest over time
-st.subheader("search interest over time")
+# ------------------------------------------------ search interest over time
+st.subheader("Search interest over time")
 
 chosen = st.multiselect("Keywords", list(keyword_of.keys()), default=list(keyword_of.keys()),
                         format_func=lambda k: keyword_of[k])
-
-if chosen: 
+if chosen:
     search = trends[["month"] + [k + "_interest" for k in chosen]].copy()
     search.columns = ["month"] + [keyword_of[k] for k in chosen]
     search = search.melt(id_vars="month", var_name="Keyword", value_name="Search interest")
     fig = px.line(search, x="month", y="Search interest", color="Keyword")
     fig.update_layout(xaxis_title="", legend=dict(orientation="h", y=-0.2, title_text=""))
     st.plotly_chart(fig, width="stretch")
-    st.caption("Each keyword has its own 0 to 100 scale.")
+    st.caption("Each keyword has its own 0-100 scale (100 = its own highest month).")
 else:
-    st.info("Pick atleast one keyword")
+    st.info("Pick at least one keyword.")
 
 st.divider()
 
-# Coverage vs search interest
+# --------------------------------------------- coverage vs search interest
 st.subheader("News coverage vs search interest")
 
 group_name = st.selectbox("Topic group", groups["group"])
@@ -55,7 +54,7 @@ fig.add_trace(go.Scatter(x=trends["month"], y=trends[key + "_interest"], name="S
                          line=dict(color="#C44E52")), secondary_y=True)
 fig.update_yaxes(title_text="Articles per month", secondary_y=False)
 fig.update_yaxes(title_text="Search interest (0-100)", secondary_y=True)
-fig.update_layout(title=f"{group_name} (keyword: {row['keyword']})", legend=dict(orientation="h", y=-0.15))
+fig.update_layout(title=f"{group_name}  (keyword: {row['keyword']})", legend=dict(orientation="h", y=-0.15))
 st.plotly_chart(fig, width="stretch")
 
 info = summary[summary["key"] == key].iloc[0]
@@ -70,19 +69,24 @@ with st.expander("Peak month and sentiment tables for every group"):
 
 st.divider()
 
-# Regional search interest
+# ---------------------------------------------------------- regional interest
 st.subheader("Regional search interest")
 
-map_key = st.selectbox("Keyword", list(keyword_of.keys()), format_func=lambda k:keyword_of[k], key="map_key")
-column = map_key +"_score"
+map_key = st.selectbox("Keyword", list(keyword_of.keys()), format_func=lambda k: keyword_of[k], key="map_key")
+column = map_key + "_score"
 
 map_names = [f["properties"]["Propinsi"] for f in geojson["features"]]
 scored = region.dropna(subset=[column, "map_name"])
 
 fig = go.Figure()
 fig.add_trace(go.Choropleth(
+    geojson=geojson, featureidkey="properties.Propinsi", locations=map_names,
+    z=[0] * len(map_names), colorscale=[[0, "#d9d9d9"], [1, "#d9d9d9"]], showscale=False,
+    marker_line_color="white", marker_line_width=0.5, hovertemplate="No data<extra></extra>",
+))
+fig.add_trace(go.Choropleth(
     geojson=geojson, featureidkey="properties.Propinsi", locations=scored["map_name"],
-    z=scored[column], text=scored["region"], zmin=0, zmax=100, colorscale="yLOrRd",
+    z=scored[column], text=scored["region"], zmin=0, zmax=100, colorscale="YlOrRd",
     colorbar_title="Score", marker_line_color="white", marker_line_width=0.5,
     hovertemplate="<b>%{text}</b><br>Score: %{z}<extra></extra>",
 ))
@@ -101,3 +105,23 @@ fig.update_layout(coloraxis_colorbar_title="Score")
 st.plotly_chart(fig, width="stretch")
 
 st.divider()
+
+# ------------------------------------------------- interest by satellite/topic
+st.subheader("Search interest by satellite or topic")
+
+left, right = st.columns([1, 1])
+
+fig = px.bar(summary.sort_values("Months with searches"), x="Months with searches", y="Keyword",
+             orientation="h", text="Months with searches",
+             title="In how many months was the keyword searched?")
+fig.update_layout(yaxis_title="")
+left.plotly_chart(fig, width="stretch")
+
+table = summary.copy()
+table["Peak month"] = table["Peak month"].dt.strftime("%b %Y")
+right.dataframe(
+    table[["Topic group", "Keyword", "Peak month", "Months with searches", "Articles in group",
+           "Articles in peak month"]],
+    hide_index=True, width="stretch",
+)
+right.caption("Most keywords are searched in only a few months: people search when there is an event.")

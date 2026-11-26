@@ -1,23 +1,23 @@
 import plotly.express as px
 import streamlit as st
 
-from common import min_topic_n, sentiment_colors, sentiment_order, load_data
+from common import MIN_TOPIC_N, SENTIMENT_COLORS, SENTIMENT_ORDER, load_data
 
 data = load_data()
 articles = data["articles"]
 topic_keywords = data["topics"]
 
 st.title("Media Analysis")
-st.caption("How the news talks about PSN: Topics, sentiment and coverage")
+st.caption("How the news talks about PSN: topics, sentiment and coverage")
 
-# Filters
+# ---------------------------------------------------------------- filters
 year_min, year_max = int(articles["year"].min()), int(articles["year"].max())
 all_topics = sorted(articles[articles["topic"] != -1]["topic_label"].unique())
 
 f1, f2, f3 = st.columns(3)
 years = f1.slider("Year", year_min, year_max, (year_min, year_max))
 topics = f2.multiselect("Topic", all_topics, default=all_topics)
-sentiments = f3.multiselect("Sentiment", sentiment_order, default=sentiment_order)
+sentiments = f3.multiselect("Sentiment", SENTIMENT_ORDER, default=SENTIMENT_ORDER)
 
 df = articles[
     articles["year"].between(years[0], years[1])
@@ -28,52 +28,52 @@ df = articles[
 st.caption(f"{len(df)} of {len(articles)} articles selected. Outlier articles that fit no topic are left out of the topic charts.")
 
 if df.empty:
-    st.warning("No articles match the filters. Please widen the filters above")
+    st.warning("No articles match the filters. Please widen the filters above.")
     st.stop()
 
 st.divider()
 
-# Sentiment Distribution
-
-st.subheader("Sentiment Distribution")
+# ------------------------------------------------------ sentiment distribution
+st.subheader("Sentiment distribution")
 
 left, right = st.columns(2)
 
-counts = df["sentiment"].value_counts().reindex(sentiment_order).fillna(0).reset_index()
+counts = df["sentiment"].value_counts().reindex(SENTIMENT_ORDER).fillna(0).reset_index()
 counts.columns = ["sentiment", "articles"]
 fig = px.bar(counts, x="sentiment", y="articles", text="articles", color="sentiment",
-             color_discrete_map=sentiment_colors, title="Articles per sentiment")
+             color_discrete_map=SENTIMENT_COLORS, title="Articles per sentiment")
 fig.update_layout(showlegend=False, xaxis_title="")
 left.plotly_chart(fig, width="stretch")
 
-fig = px.histogram(df, x="sentiment_score", nbins=30, color="sentiment", color_discrete_map=sentiment_colors,
-                   category_orders={"sentiment": sentiment_order}, title="sentiment score (-1 negative, +1 positive)")
-fig.update_layout(xaxis_title="sentiment score", yaxis_title="Articles", legend_title_text="")
+fig = px.histogram(df, x="sentiment_score", nbins=30, color="sentiment", color_discrete_map=SENTIMENT_COLORS,
+                   category_orders={"sentiment": SENTIMENT_ORDER}, title="Sentiment score (-1 negative, +1 positive)")
+fig.update_layout(xaxis_title="Sentiment score", yaxis_title="Articles", legend_title_text="")
 right.plotly_chart(fig, width="stretch")
 
 st.divider()
 
-# Sentiment by topic
+# ------------------------------------------------------------ sentiment by topic
 st.subheader("Sentiment by topic")
+
 topic_df = df[df["topic"] != -1]
 topic_sizes = topic_df["topic_label"].value_counts()
-big_topics = topic_sizes[topic_sizes >= min_topic_n].index
+big_topics = topic_sizes[topic_sizes >= MIN_TOPIC_N].index
 
 if len(big_topics) == 0:
-    st.info(f"No topic has at least {min_topic_n} articles with the current filters.")
+    st.info(f"No topic has at least {MIN_TOPIC_N} articles with the current filters.")
 else:
     big_df = topic_df[topic_df["topic_label"].isin(big_topics)]
     share = (big_df.groupby(["topic_label", "sentiment"]).size() / big_df.groupby("topic_label").size() * 100)
     share = share.rename("percent").reset_index()
     fig = px.bar(share, x="percent", y="topic_label", color="sentiment", orientation="h",
-                 color_discrete_map=sentiment_colors, category_orders={"sentiment": sentiment_order})
+                 color_discrete_map=SENTIMENT_COLORS, category_orders={"sentiment": SENTIMENT_ORDER})
     fig.update_layout(xaxis_title="% of articles", yaxis_title="", legend_title_text="")
     st.plotly_chart(fig, width="stretch")
-    st.caption(f"Only topics with at least {min_topic_n} articles are shown.")
+    st.caption(f"Only topics with at least {MIN_TOPIC_N} articles are shown.")
 
 st.divider()
 
-# Topic frequency and keywords
+# ------------------------------------------------ topic frequency and keywords
 st.subheader("Topic frequency and representation")
 
 left, right = st.columns([1, 2])
@@ -87,7 +87,7 @@ left.plotly_chart(fig, width="stretch")
 keyword_table = topic_df.groupby("topic").agg(
     articles=("doc_id", "count"), avg_sentiment=("sentiment_score", "mean")
 ).reset_index()
-keyword_table["share"] = keyword_table["articles"] / len(topic_df)*100
+keyword_table["share"] = keyword_table["articles"] / len(topic_df) * 100
 keyword_table = keyword_table.merge(topic_keywords, on="topic", how="left").sort_values("articles", ascending=False)
 right.dataframe(
     keyword_table[["topic_label", "articles", "share", "avg_sentiment", "keywords"]],
@@ -104,7 +104,7 @@ right.dataframe(
 
 st.divider()
 
-# Coverage Trends
+# ---------------------------------------------------------- coverage trends
 st.subheader("News coverage trends")
 
 o1, o2 = st.columns(2)
@@ -117,8 +117,8 @@ plot_df = df if stack_by == "Sentiment" else topic_df
 
 trend = plot_df.groupby([x_col, color_col]).size().reset_index(name="articles")
 if color_col == "sentiment":
-    fig = px.bar(trend, x=x_col, y="articles", color=color_col, color_discrete_map=sentiment_colors,
-                 category_orders={"sentiment": sentiment_order})
+    fig = px.bar(trend, x=x_col, y="articles", color=color_col, color_discrete_map=SENTIMENT_COLORS,
+                 category_orders={"sentiment": SENTIMENT_ORDER})
 else:
     fig = px.bar(trend, x=x_col, y="articles", color=color_col)
 if x_col == "year":
@@ -128,8 +128,8 @@ st.plotly_chart(fig, width="stretch")
 
 st.divider()
 
-# Article explorer
-st.subheader("Lists of articles")
+# --------------------------------------------------------- article explorer
+st.subheader("Article explorer")
 
 search = st.text_input("Search in title", "")
 table = df
@@ -153,6 +153,3 @@ st.dataframe(
         "article_url": st.column_config.LinkColumn("Original article", display_text="open"),
     },
 )
-
-
-
