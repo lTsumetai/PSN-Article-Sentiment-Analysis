@@ -94,11 +94,12 @@ Its performance on other text domains, such as customer reviews or voice-call tr
 
 ## Limitations
 
-- every satelite keyword only has one big search rise, hence the pattern only comes ffrom 4 cases
-- Coverage and searches spikes together, but only a certain event drives them both.
 - The dataset used (after cleaning) was only 254 articles, being several topics only has 12 to 21 articles, and the negative sentiment only has just 24 hand labels
-- Google News RSS gives uneven coverage by year. making it imbalanced data.
-- f1 score for the best model is 0.74 in cross-validation, it less accurate on english articles rather than indonesian one, english article scores 0.67 meanwhile indonesian ones is at 0.78. it can be improved by using another prediction model.
+- Only 180 articles were manually labelled for sentiment training and evaluation
+- Negative sentiment has fewer labelled samples, with only 24 articles. which may affect classification performance, making it harder to detect negative sentiment.
+- The model performs differently across languages, with lower performance on English articles.
+- Google News RSS provides uneven article coverage across different years.
+- News coverage and public search interest is based on a limited number of major satellite events.
  
 
 ## Repository Structure
