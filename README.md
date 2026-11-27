@@ -4,7 +4,13 @@ The main objective of this project was to answer this specific question
 
 when **Pasifik Satelit Nusantara (PSN)** makes the news, does the public take notice ?
 
-this project scrapes news about PSN, finds what the coverage is about, checks how positive or negative it is, and compares it with google trends to see when and where people search for PSN's satellites
+This project investigates whether news coverage about Pasifik Satelit Nusantara (PSN) influences public interest in its satellite projects. The analysis combines news article scraping, topic modelling, sentiment analysis, and google trends data to explore the relationship between media coverage and publis search interest.
+
+The project aims to understand:
+- What topics are discussed in news coverage about PSN ?
+- How positive or negative is the news coverage ?
+- When and Where does public interest increase ?
+- is increased news coverage associated with higher public search interest ?
 
 ## Key Findings
 
@@ -21,7 +27,6 @@ this project scrapes news about PSN, finds what the coverage is about, checks ho
 3. The even months has more articles than a normal month. this means searches spikes when there is a burst of coverage, for example satellite launch
 4. The even drives attention. launches were neutral to positive, and the nusantara dua failure was strongly negative.
 5. The most negative topic occurred during the month of the Nusantara Dua failure, with a sentiment score of -0.61. meanwhile the rest of the topic was mostly dominant positive or neutral. this shows that sentiment highly dependant on topics.
-6. 
 
 ## BERTopic
 
