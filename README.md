@@ -70,7 +70,15 @@ News articles and google trends are two seperate tables, so they are joined by *
 | TF-IDF + SVM | 0.698 | 0.722 |
 | TF-IDF + Naive Bayes | 0.690 | 0.722 |
 
+## Model Scope
 
+The sentiment Classification model was trained and evaluated using manually labelled PSN news articles.
+
+The best performing model was TF-IDF + Logistic Regression, achieving a F1-score of 0.743 and an accuracy of 0.761 through 5-fold cross-validation.
+
+The model is designed for sentiment classification within the news article used in this project.
+
+Its performance on other text domains, such as customer reviews or voice-call transcripts, has not been evaluated. Applying the model to different text domains may require additional testing, preprocessing adjustments, or retraining with domain-specific data.
 
 ## Data
 
