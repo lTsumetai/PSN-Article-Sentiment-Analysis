@@ -1,5 +1,7 @@
 # PSN News: Sentiment Analysis
 
+## Project Overview
+
 The main objective of this project was to answer this specific question
 
 when **Pasifik Satelit Nusantara (PSN)** makes the news, does the public take notice ?
